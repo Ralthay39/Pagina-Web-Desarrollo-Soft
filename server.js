@@ -51,6 +51,33 @@ const guardarUsuarios = (usuarios) => {
     fs.writeFileSync('./data/usuarios.json', JSON.stringify(usuarios, null, 2));
 };
 
+// ==================== BASE DE DATOS SQLITE ====================
+/*const database = require('./database');
+
+// Obtener artículos
+app.get('/api/articulos', async (req, res) => {
+    try {
+        const articulos = await database.obtenerArticulos();
+        res.json(articulos);
+    } catch (error) {
+        res.status(500).json({ error: 'Error obteniendo artículos' });
+    }
+});
+
+// Crear artículo
+app.post('/api/articulos', requireAuth, requireRole(['redactor', 'admin']), async (req, res) => {
+    try {
+        const nuevoArticulo = {
+            ...req.body,
+            autor_id: req.session.usuario.id
+        };
+        const articulo = await database.crearArticulo(nuevoArticulo);
+        res.status(201).json(articulo);
+    } catch (error) {
+        res.status(500).json({ error: 'Error creando artículo' });
+    }
+});*/
+
 // ==================== MIDDLEWARES DE AUTENTICACIÓN ====================
 const requireAuth = (req, res, next) => {
     if (req.session.usuario) {
@@ -94,7 +121,7 @@ app.get('/api/articulos/:id', (req, res) => {
 
 // ==================== RUTAS DE AUTENTICACIÓN ====================
 
-// REGISTRO de nuevo usuario (VERSIÓN MEJORADA)
+// REGISTRO de nuevo usuario
 app.post('/api/registro', async (req, res) => {
     try {
         const { email, password, nombre, codigoInvitacion } = req.body;
@@ -254,7 +281,7 @@ app.get('/api/perfil', requireAuth, (req, res) => {
     });
 });
 
-// Ruta solo para administradores (ejemplo)
+// Ruta solo para administradores
 app.get('/api/admin', requireRole(['admin']), (req, res) => {
     res.json({ mensaje: 'Panel de administración' });
 });
@@ -448,7 +475,7 @@ app.get('/api/debug-session', (req, res) => {
 
 // ==================== INICIAR SERVIDOR ====================
 app.listen(PORT, () => {
-    console.log(`🚀 Blog universitario ejecutándose en: http://localhost:${PORT}`);
+    console.log(`🚀 Blog de Seguridad en Redes ejecutándose en: http://localhost:${PORT}`);
     console.log(`🔐 Sistema de autenticación activado`);
     console.log(`📊 Endpoints disponibles:`);
     console.log(`   👉 POST /api/registro - Registrar usuario`);

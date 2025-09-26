@@ -1,4 +1,4 @@
-// panel.js - VERSIÓN CORREGIDA (con inicialización asíncrona)
+// panel.js - Lógica del panel de usuario (redactores y admins)
 class PanelManager {
     constructor() {
         this.articulos = [];
@@ -416,7 +416,7 @@ class PanelManager {
     }
 }
 
-// Inicialización CORREGIDA - Esperar a que todo esté listo
+// Inicialización - Esperar a que todo esté listo
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('🚀 Inicializando panel...');
     

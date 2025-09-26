@@ -111,9 +111,9 @@ class AuthManager {
         const password = passwordInput.value;
         const codigoInvitacion = codigoInput ? codigoInput.value : '';
 
-        //  Validación de email institucional
+        //  Validación de Correo institucional
         if (!email.endsWith('@unihumboldt.edu.ve')) {
-            this.mostrarMensaje('❌ Solo se permiten emails institucionales (@unihumboldt.edu.ve)', 'error');
+            this.mostrarMensaje('❌ Solo se permiten correos institucionales (@unihumboldt.edu.ve)', 'error');
             return;
         }
 

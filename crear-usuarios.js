@@ -1,11 +1,11 @@
-// crear-usuarios.js - Script para generar usuarios con contraseñas reales
+// crear-usuarios.js - Script para generar usuarios default con contraseñas encriptadas
 const bcrypt = require('bcrypt');
 const fs = require('fs');
 
 async function crearUsuariosIniciales() {
     console.log('🔐 Creando usuarios iniciales...');
     
-    // Contraseñas que SÍ vamos a usar
+    // Contraseñas que vamos a usar
     const passwordAdmin = 'admin123';
     const passwordRedactor = 'redactor123';
     const passwordViewer = 'viewer123';
