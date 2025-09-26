@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Redacción - Blog Universitario</title>
+    
+    <!-- Fuentes Google -->
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/panel.css">
+</head>
+<body>
+    <!-- BARRA DE USUARIO -->
+    <div id="user-bar" class="user-bar">
+        <div class="container">
+            <span id="user-info"></span>
+            <div>
+                <a href="/" class="btn-secondary">← Volver al Blog</a>
+                <button onclick="authManager.logout()">Cerrar Sesión</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <h1>✍️ Panel de Redacción</h1>
+                <p>Gestiona tus artículos</p>
+            </div>
+            <nav class="nav">
+                <a href="#mis-articulos" onclick="panelManager.mostrarSeccion('mis-articulos')">Mis Artículos</a>
+                <a href="#nuevo-articulo" onclick="panelManager.mostrarSeccion('nuevo-articulo')">Nuevo Artículo</a>
+                <a href="#estadisticas" onclick="panelManager.mostrarSeccion('estadisticas')">Estadísticas</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+        <div class="container">
+            <!-- Sección de Mis Artículos -->
+            <section id="mis-articulos" class="seccion-panel">
+                <h2>📝 Mis Artículos</h2>
+                <div id="lista-mis-articulos" class="articulos-lista">
+                    <div class="loading">Cargando tus artículos...</div>
+                </div>
+            </section>
+
+            <!-- Sección de Nuevo Artículo -->
+            <div id="nuevo-articulo" class="seccion-panel" style="display: none;">
+                <div class="form-panel">
+                    <h2>📝 Crear Nuevo Artículo</h2>
+                    
+                    <form id="form-nuevo-articulo">
+                        <div class="form-group">
+                            <label for="titulo">Título del Artículo *</label>
+                            <input type="text" id="titulo" placeholder="Escribe un título atractivo..." required>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="categoria">Categoría *</label>
+                                <select id="categoria" required>
+                                    <option value="">Selecciona una categoría</option>
+                                    <option value="tecnologia">Tecnología</option>
+                                    <option value="ingenieria">Ingeniería</option>
+                                    <option value="ciencias">Ciencias</option>
+                                    <option value="investigacion">Investigación</option>
+                                    <option value="educacion">Educación</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="resumen">Resumen (opcional)</label>
+                                <textarea id="resumen" placeholder="Breve descripción del artículo..." maxlength="300"></textarea>
+                                <div class="contador-caracteres" id="contador-resumen">0/300 caracteres</div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="contenido">Contenido del Artículo *</label>
+                            <textarea id="contenido" placeholder="Escribe el contenido completo de tu artículo aquí..." 
+                                    required rows="12"></textarea>
+                            <div class="help-text">Puedes usar saltos de línea para separar párrafos.</div>
+                        </div>
+
+                        <button type="submit" class="btn-form">✅ Publicar Artículo</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Sección de Estadísticas -->
+            <section id="estadisticas" class="seccion-panel" style="display: none;">
+                <h2>📊 Estadísticas</h2>
+                <div id="contenido-estadisticas" class="estadisticas">
+                    <div class="loading">Cargando estadísticas...</div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- MODAL DE EDICIÓN -->
+    <div id="modal-edicion" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="panelManager.cerrarModalEdicion()">&times;</span>
+            <h3>✏️ Editar Artículo</h3>
+            <form id="form-editar-articulo">
+                <input type="hidden" id="editar-id">
+                
+                <div class="form-group">
+                    <label for="editar-titulo">Título:</label>
+                    <input type="text" id="editar-titulo" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="editar-categoria">Categoría:</label>
+                    <select id="editar-categoria" required>
+                        <option value="Tecnología">Tecnología</option>
+                        <option value="Ingeniería">Ingeniería</option>
+                        <option value="Ciencias">Ciencias</option>
+                        <option value="Humanidades">Humanidades</option>
+                        <option value="Medicina">Medicina</option>
+                        <option value="Investigación">Investigación</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="editar-resumen">Resumen:</label>
+                    <textarea id="editar-resumen" maxlength="300"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="editar-contenido">Contenido:</label>
+                    <textarea id="editar-contenido" required minlength="50"></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" onclick="panelManager.cerrarModalEdicion()" class="btn-secondary">Cancelar</button>
+                    <button type="submit" class="btn-primary">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="/js/auth.js"></script>
+    <script src="/js/panel.js"></script>
+</body>
+</html>

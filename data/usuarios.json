@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "email": "admin@unihumboldt.edu.ve",
+    "password": "$2b$10$1fZ11G7gnojU6rIjzxVH7.vcTAyfAIVvTUerLsKhCftC8yotp/3Wu",
+    "nombre": "Administrador Principal",
+    "rol": "admin",
+    "fechaRegistro": "2025-09-24T05:50:55.239Z"
+  },
+  {
+    "id": 2,
+    "email": "redactor@unihumboldt.edu.ve",
+    "password": "$2b$10$zXS63wF3HY0Ix1OFP4mQTuwAx6LZJJfGO.9dUT/xCghLnN.Ely1WS",
+    "nombre": "Profesor Investigador",
+    "rol": "redactor",
+    "fechaRegistro": "2025-09-24T05:50:55.240Z"
+  },
+  {
+    "id": 3,
+    "email": "viewer@unihumboldt.edu.ve",
+    "password": "$2b$10$ghrHPfhg7MDVvSnsw1shv.X3H1RGXKf6iHHw4LBl1x1jYYfr8ZV9C",
+    "nombre": "Estudiante Viewer",
+    "rol": "viewer",
+    "fechaRegistro": "2025-09-24T05:50:55.240Z"
+  }
+]

@@ -1,0 +1,677 @@
+/* ==================== VARIABLES Y CONFIGURACIÓN GENERAL ==================== */
+:root {
+    /* PALETA OFICIAL UNIVERSIDAD HUMBOLDT */
+    --rojo: #be3a4b;
+    --rojo-oscuro: #C51D34;
+    --negro: #242024;
+    --negro-texto: #2E2E30;
+    --gris-oscuro: #373437;
+    --gris-medio: #95A5A6;
+    --gris-claro: #ECF0F1;
+    --blanco: #FFFFFF;
+    
+    /* COLORES SECUNDARIOS */
+    --gradiente-hero: linear-gradient(135deg, var(--rojo) 0%, var(--rojo-oscuro) 100%);
+    --sombra-suave: 0 2px 10px rgba(44, 62, 80, 0.1);
+    --sombra-media: 0 5px 15px rgba(44, 62, 80, 0.15);
+}
+
+/* ==================== RESET Y CONFIGURACIÓN BASE ==================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Open Sans', sans-serif;
+    line-height: 1.6;
+    color: var(--negro-texto);
+    background: var(--blanco);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Merriweather', serif;
+    font-weight: 700;
+    color: var(--negro);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* ==================== COMPONENTES REUTILIZABLES ==================== */
+.btn {
+    display: inline-block;
+    padding: 0.7rem 1.5rem;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.btn-primario {
+    background: var(--rojo);
+    color: var(--blanco);
+}
+
+.btn-primario:hover {
+    background: var(--rojo-oscuro);
+    transform: translateY(-2px);
+    box-shadow: var(--sombra-media);
+}
+
+.btn-secundario {
+    background: var(--gris-oscuro);
+    color: var(--blanco);
+}
+
+.btn-secundario:hover {
+    background: var(--negro);
+}
+
+.card {
+    background: var(--blanco);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: var(--sombra-suave);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--sombra-media);
+}
+
+/* ==================== HEADER ==================== */
+.header {
+    background: var(--negro);
+    color: var(--blanco);
+    padding: 1rem 0;
+    box-shadow: var(--sombra-suave);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo h1 {
+    margin: 0;
+    font-size: 1.8rem;
+    color: var(--blanco);
+}
+
+.logo p {
+    margin: 0;
+    opacity: 0.8;
+    color: var(--gris-claro);
+}
+
+.nav a {
+    color: var(--blanco);
+    text-decoration: none;
+    margin-left: 2rem;
+    transition: opacity 0.3s;
+    padding: 0.5rem 0;
+}
+
+.nav a:hover {
+    opacity: 0.8;
+}
+
+.nav-login {
+    background: var(--rojo);
+    padding: 0.5rem 1rem !important;
+    border-radius: 5px;
+    margin-left: 1rem !important;
+}
+
+.nav-login:hover {
+    background: var(--rojo-oscuro);
+    opacity: 1 !important;
+}
+
+/* Estilos específicos para el enlace Panel */
+.nav-panel {
+    background: var(--rojo);
+    color: var(--blanco);
+    padding: 0.5rem 1rem !important;
+    border-radius: 5px;
+    margin-left: 1rem !important;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.nav-panel:hover {
+    background: var(--rojo-oscuro);
+    transform: translateY(-2px);
+    box-shadow: var(--sombra-suave);
+}
+
+/* Cuando el usuario está logeado, ocultamos el login */
+.user-logged-in .nav-login {
+    display: none !important;
+}
+
+.user-logged-in .nav-panel {
+    display: inline-block !important;
+}
+
+/* ==================== HERO SECTION ==================== */
+.hero {
+    text-align: center;
+    padding: 4rem 0;
+    background: var(--gradiente-hero);
+    color: var(--blanco);
+    margin-bottom: 3rem;
+}
+
+.hero h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--blanco);
+}
+
+/* ==================== GRID DE ARTÍCULOS ==================== */
+.articulos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+    margin: 3rem 0;
+}
+
+.articulo-card {
+    background: var(--blanco);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: var(--sombra-suave);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.articulo-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--sombra-media);
+}
+
+.articulo-imagen {
+    width: 100%;
+    height: 200px;
+    background: var(--gradiente-hero);
+    color: var(--blanco);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+}
+
+.articulo-imagen img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.articulo-contenido {
+    padding: 1.5rem;
+}
+
+.articulo-categoria {
+    background: var(--rojo);
+    color: var(--blanco);
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    display: inline-block;
+    margin-bottom: 1rem;
+}
+
+.articulo-titulo {
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+    color: var(--negro);
+}
+
+.articulo-resumen {
+    color: var(--gris-oscuro);
+    margin-bottom: 1rem;
+}
+
+.articulo-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: var(--gris-medio);
+}
+
+.btn-leer-mas {
+    display: inline-block;
+    padding: 0.7rem 1.5rem;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Open Sans', sans-serif;
+    background: var(--rojo);
+    color: var(--blanco);
+    margin-top: 1rem;
+}
+
+.btn-leer-mas:hover {
+    background: var(--rojo-oscuro);
+    transform: translateY(-2px);
+    box-shadow: var(--sombra-media);
+}
+
+/* ==================== COMPONENTES DE ESTADO ==================== */
+.no-articulos, .error {
+    text-align: center;
+    padding: 3rem;
+    grid-column: 1 / -1;
+    border-radius: 10px;
+}
+
+.no-articulos {
+    background: var(--gris-claro);
+    color: var(--gris-oscuro);
+}
+
+.error {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+/* ==================== SISTEMA DE AUTENTICACIÓN ==================== */
+.user-bar {
+    background: var(--gris-oscuro);
+    color: var(--blanco);
+    padding: 10px 0;
+    font-size: 0.9rem;
+}
+
+.user-bar .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.user-bar button {
+    display: inline-block;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Open Sans', sans-serif;
+    background: var(--rojo);
+    color: var(--blanco);
+    font-size: 0.8rem;
+}
+
+.user-bar button:hover {
+    background: var(--rojo-oscuro);
+    transform: translateY(-2px);
+    box-shadow: var(--sombra-media);
+}
+
+/* Modal de autenticación */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+    background-color: var(--blanco);
+    margin: 10% auto;
+    padding: 2rem;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 400px;
+    position: relative;
+    box-shadow: var(--sombra-media);
+}
+
+.close {
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--gris-medio);
+}
+
+.close:hover {
+    color: var(--negro);
+}
+
+.modal h3 {
+    margin-bottom: 1.5rem;
+    text-align: center;
+    color: var(--negro);
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--negro);
+    font-weight: 600;
+}
+
+.modal input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--gris-claro);
+    border-radius: 5px;
+    background: var(--blanco);
+    transition: border-color 0.3s;
+}
+
+.modal input:focus {
+    outline: none;
+    border-color: var(--rojo);
+}
+
+.modal button {
+    display: inline-block;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Open Sans', sans-serif;
+    background: var(--rojo);
+    color: var(--blanco);
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.modal button:hover {
+    background: var(--rojo-oscuro);
+    transform: translateY(-2px);
+    box-shadow: var(--sombra-media);
+}
+
+.modal p {
+    text-align: center;
+    margin-top: 1rem;
+    color: var(--gris-oscuro);
+}
+
+.modal a {
+    color: var(--rojo);
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.modal a:hover {
+    text-decoration: underline;
+}
+
+/* ==================== FOOTER ==================== */
+.footer {
+    background: var(--negro);
+    color: var(--blanco);
+    padding: 3rem 0 1rem;
+    margin-top: 4rem;
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.footer-section h3 {
+    border-bottom: 2px solid var(--rojo);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+    color: var(--blanco);
+}
+
+.contacto-info p {
+    margin: 0.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--gris-claro);
+}
+
+/* Sección de ubicación */
+.footer-ubicacion {
+    grid-column: 1 / -1;
+    margin-top: 20px;
+}
+
+.footer-mapa-container {
+    background: var(--gris-oscuro);
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 15px;
+}
+
+/* Mapa en tamaño completo */
+#footer-mapa {
+    height: 500px !important;
+    width: 100% !important;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 15px;
+    border: 2px solid var(--gris-medio);
+}
+
+/* Asegurar que Leaflet ocupe todo el espacio */
+#footer-mapa .leaflet-container {
+    height: 100% !important;
+    width: 100% !important;
+    border-radius: 8px;
+}
+
+/* Acciones del mapa centradas */
+.mapa-acciones {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+}
+
+.btn-mapa {
+    display: inline-block;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 14px;
+    min-width: 140px;
+}
+
+.btn-mapa-principal {
+    background: var(--rojo);
+    color: var(--blanco);
+}
+
+.btn-mapa-secundario {
+    background: var(--gris-medio);
+    color: var(--blanco);
+}
+
+.btn-mapa:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--sombra-suave);
+}
+
+.ubicacion-info {
+    background: var(--gris-claro);
+    padding: 15px;
+    border-radius: 6px;
+    border-left: 4px solid var(--rojo);
+    text-align: center;
+}
+
+.ubicacion-info p {
+    margin: 5px 0;
+    font-size: 14px;
+    color: var(--negro-texto);
+}
+
+.ubicacion-info strong {
+    color: var(--negro);
+}
+
+.footer-bottom {
+    text-align: center;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    color: var(--gris-medio);
+}
+
+/* Ocultar placeholder cuando el mapa cargue */
+.leaflet-container ~ .mapa-placeholder {
+    display: none;
+}
+
+/* Popup personalizado */
+.leaflet-popup-content-wrapper {
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.leaflet-popup-content {
+    margin: 0;
+    padding: 0;
+    line-height: 1.4;
+}
+
+/* Controles de zoom */
+.leaflet-control-zoom a {
+    background: #2c3e50 !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 4px !important;
+    font-weight: bold;
+}
+
+.leaflet-control-zoom a:hover {
+    background: #34495e !important;
+}
+
+/* ==================== RESPONSIVE DESIGN ==================== */
+@media (max-width: 768px) {
+    .header .container {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .nav {
+        margin-top: 1rem;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+    }
+    
+    .nav a {
+        margin: 0;
+    }
+    
+    .hero h2 {
+        font-size: 2rem;
+    }
+    
+    .articulos-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .mapa-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .mapa {
+        height: 300px;
+    }
+    
+    .footer-content {
+        grid-template-columns: 1fr;
+    }
+    
+    .footer-mapa-grande {
+        height: 250px;
+    }
+    
+    .mapa-acciones-mejoradas {
+        flex-direction: column;
+    }
+    
+    .btn-mapa {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 0 15px;
+    }
+    
+    .hero {
+        padding: 2rem 0;
+    }
+    
+    .hero h2 {
+        font-size: 1.8rem;
+    }
+    
+    .articulo-card {
+        margin: 0 -15px;
+        border-radius: 0;
+    }
+}
+
+/* ==================== UTILIDADES ==================== */
+.text-center { text-align: center; }
+.mt-1 { margin-top: 1rem; }
+.mt-2 { margin-top: 2rem; }
+.mb-1 { margin-bottom: 1rem; }
+.mb-2 { margin-bottom: 2rem; }
+.hidden { display: none; }
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}

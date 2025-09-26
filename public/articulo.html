@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artículo - Blog Universitario</title>
+    
+    <!-- Fuentes Google -->
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/articulo.css">
+</head>
+<body>
+    <!-- BARRA DE USUARIO -->
+    <div id="user-bar" class="user-bar" style="display: none;">
+        <div class="container">
+            <span id="user-info"></span>
+            <button onclick="authManager.logout()">Cerrar Sesión</button>
+        </div>
+    </div>
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <h1>🔬 Blog de Seguridad en Redes</h1>
+                <p>Blog Académico</p>
+            </div>
+            <nav class="nav">
+                <a href="/">← Volver al Inicio</a>
+                <a href="#categorias">Categorías</a>
+                <a href="#about">Sobre Nosotros</a>
+                <a href="#" class="nav-login" onclick="authManager.showLogin()">🔐 Login</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+        <div class="container">
+            <!-- Breadcrumb -->
+            <nav class="breadcrumb">
+                <a href="/">Inicio</a> > <span id="breadcrumb-categoria">Categoría</span> > <span id="breadcrumb-titulo">Artículo</span>
+            </nav>
+
+            <!-- Contenedor del artículo -->
+            <article id="contenido-articulo" class="articulo-completo">
+                <div class="loading">Cargando artículo...</div>
+            </article>
+
+            <!-- Navegación entre artículos -->
+            <nav class="navegacion-articulos">
+                <button id="btn-anterior" class="btn-nav" disabled>← Artículo Anterior</button>
+                <button id="btn-siguiente" class="btn-nav">Artículo Siguiente →</button>
+            </nav>
+
+            <!-- Sección de comentarios MEJORADA -->
+            <section class="seccion-comentarios">
+                <h3>💬 Comentarios <span id="contador-comentarios">(0)</span></h3>
+                
+                <!-- Estado según autenticación -->
+                <div id="estado-comentarios">
+                    <div id="no-autenticado" class="comentarios-placeholder">
+                        <p>🔒 Para comentar este artículo, debes iniciar sesión.</p>
+                        <button onclick="authManager.showLogin()" class="btn-login-comentarios">
+                            🔐 Iniciar Sesión para Comentar
+                        </button>
+                    </div>
+                    
+                    <div id="autenticado" style="display: none;">
+                        <form id="form-comentario" class="form-comentario">
+                            <textarea id="texto-comentario" placeholder="Escribe tu comentario..." required></textarea>
+                            <button type="submit" class="btn-enviar-comentario">Publicar Comentario</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Lista de comentarios -->
+                <div id="lista-comentarios" class="lista-comentarios">
+                    <div class="comentarios-placeholder">
+                        <p>📝 Sé el primero en comentar este artículo.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- MODAL DE LOGIN/REGISTRO -->
+    <div id="auth-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            
+            <div id="login-form">
+                <h3>🔐 Iniciar Sesión</h3>
+                <form onsubmit="authManager.login(event)">
+                    <div class="form-group">
+                        <label for="login-email">Email institucional:</label>
+                        <input type="email" id="login-email" placeholder="usuario@universidad.edu" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Contraseña:</label>
+                        <input type="password" id="login-password" placeholder="Tu contraseña" required>
+                    </div>
+                    <button type="submit">Ingresar al Sistema</button>
+                </form>
+                <p class="form-switch">¿No tienes cuenta? <a href="#" onclick="authManager.showRegister()">Regístrate aquí</a></p>
+            </div>
+
+            <div id="register-form" style="display: none;">
+                <h3>👤 Crear Cuenta Institucional</h3>
+                <form onsubmit="authManager.register(event)">
+                    <div class="form-group">
+                        <label for="register-nombre">Nombre completo:</label>
+                        <input type="text" id="register-nombre" placeholder="Ej: Juan Pérez García" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="register-email">Email institucional:</label>
+                        <input type="email" id="register-email" placeholder="usuario@universidad.edu" required>
+                        <small>Solo se permiten emails de la universidad</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="register-password">Contraseña:</label>
+                        <input type="password" id="register-password" placeholder="Mínimo 6 caracteres" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="register-codigo">Código de invitación (opcional):</label>
+                        <input type="text" id="register-codigo" placeholder="Ej: REDACTOR-2024">
+                        <small>
+                            Solo si eres personal académico. 
+                            <br>Deja vacío para cuenta de estudiante.
+                        </small>
+                    </div>
+                    
+                    <button type="submit">Crear Cuenta</button>
+                </form>
+                <p class="form-switch">¿Ya tienes cuenta? <a href="#" onclick="authManager.showLogin()">Inicia sesión aquí</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Universidad Alejandro de Humboldt</h3>
+                    <p>Una concepción dinámica y vanguardista de la educación universitaria</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Contacto</h3>
+                    <p>email: informacion@unihumboldt.edu.ve</p>
+                    <p>teléfono: +58 212 238 1175</p>
+                    <p>whatsapp: +58 424 157 8708</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Blog de Investigación. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="/js/auth.js"></script>
+    <script src="/js/articulo.js"></script>
+</body>
+</html>

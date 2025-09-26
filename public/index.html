@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog de Investigación - Universidad</title>
+    
+    <!-- Fuentes Google -->
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+
+<!-- MODAL DE LOGIN/REGISTRO -->
+<div id="auth-modal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        
+        <!-- FORMULARIO DE LOGIN -->
+        <div id="login-form">
+            <h3>🔐 Iniciar Sesión</h3>
+            <form onsubmit="authManager.login(event)">
+                <div class="form-group">
+                    <label for="login-email">Email institucional:</label>
+                    <input type="email" id="login-email" placeholder="usuario@unihumboldt.edu.ve" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Contraseña:</label>
+                    <input type="password" id="login-password" placeholder="Tu contraseña" required>
+                </div>
+                <button type="submit">Ingresar al Sistema</button>
+            </form>
+            <p class="form-switch">¿No tienes cuenta? <a href="#" onclick="authManager.showRegister()">Regístrate aquí</a></p>
+        </div>
+
+        <!-- FORMULARIO DE REGISTRO -->
+        <div id="register-form" style="display: none;">
+            <h3>👤 Crear Cuenta Institucional</h3>
+            <form onsubmit="authManager.register(event)">
+                <div class="form-group">
+                    <label for="register-nombre">Nombre completo:</label>
+                    <input type="text" id="register-nombre" placeholder="Ej: Juan Pérez García" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="register-email">Email institucional:</label>
+                    <input type="email" id="register-email" placeholder="usuario@unihumboldt.edu.ve" required>
+                    <small>Solo se permiten emails de la universidad</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="register-password">Contraseña:</label>
+                    <input type="password" id="register-password" placeholder="Mínimo 6 caracteres" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="register-codigo">Código de invitación (opcional):</label>
+                    <input type="text" id="register-codigo" placeholder="- - - - - -">
+                    <small>
+                        Solo si eres personal académico. 
+                        <br>Deja vacío para cuenta de estudiante.
+                    </small>
+                </div>
+                
+                <button type="submit">Crear Cuenta</button>
+            </form>
+            <p class="form-switch">¿Ya tienes cuenta? <a href="#" onclick="authManager.showLogin()">Inicia sesión aquí</a></p>
+        </div>
+    </div>
+</div>
+
+<!-- BARRA DE USUARIO -->
+<div id="user-bar" class="user-bar" style="display: none;">
+    <div class="container">
+        <span id="user-info"></span>
+        <button onclick="authManager.logout()">Cerrar Sesión</button>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="/js/auth.js"></script>
+<!-- Google Maps API -->
+<script src="/js/mapa.js"></script>
+
+<body>
+<!-- HEADER -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <h1>🔬 Blog de Seguridad en Redes</h1>
+                <p>Universidad Alejandro de Humboldt</p>
+            </div>
+            <nav class="nav">
+                <a href="/">🏠 Inicio</a>
+                <a href="#articulos">📚 Artículos</a>
+                <a href="#categorias">📂 Categorías</a>
+                <a href="#investigacion">🔍 Investigación</a>
+                <!-- El enlace "Panel" se mostrará dinámicamente cuando el usuario tenga permisos -->
+                <a href="/panel.html" class="nav-panel" style="display: none;">⚙️ Panel</a>
+                <a href="#" class="nav-login" onclick="authManager.showLogin()">🔐 Login</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+        <div class="container">
+            <section class="hero">
+                <h2>Adéntrate en el Frente Digital</h2>
+                <p>Analizamos y explicamos las últimas amenazas cibernéticas y las técnicas de defensa para que estés protegido.</p>
+            </section>
+
+            <section class="articulos-grid" id="articulos">
+                <!-- Los artículos se cargarán aquí con JavaScript -->
+            </section>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <!-- Información de la universidad -->
+                <div class="footer-section">
+                    <h3>🏫 Universidad Alejandro de Humboldt</h3>
+                    <p>Una concepción dinámica y vanguardista de la educación universitaria</p>
+                    <div class="contacto-info">
+                        <p>📍 <span id="footer-direccion">Caracas, Venezuela</span></p>
+                    </div>
+                </div>
+
+                <!-- Contacto -->
+                <div class="footer-section">
+                    <h3>📞 Contacto</h3>
+                    <div class="contacto-info">
+                        <p>📧 informacion@unihumboldt.edu.ve</p>
+                        <p>📞 +58 212 238 1175</p>
+                        <p>💬 +58 424 157 8708 (WhatsApp)</p>
+                    </div>
+                </div>
+
+                <!-- Ubicación con Mapa -->
+                <div class="footer-section footer-ubicacion">
+                    <h3>📍 Ubicación</h3>
+                    <div class="footer-mapa-container-mejorado">
+                        <!-- Mapa grande e interactivo -->
+                        <div id="footer-mapa" class="footer-mapa">
+                            <!-- Mapa se cargará aquí con JavaScript -->
+                            <div class="mapa-placeholder">
+                                <p>🌍 Cargando mapa de la universidad...</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Acciones del mapa -->
+                        <div class="mapa-acciones-mejoradas">
+                            <button onclick="mapaManager.obtenerDireccion()" class="btn-mapa btn-mapa-principal">
+                                🚗 Cómo llegar
+                            </button>
+                            <button onclick="mapaManager.compartirUbicacion()" class="btn-mapa btn-mapa-secundario">
+                                📤 Compartir ubicación
+                            </button>
+                            <button onclick="mapaManager.verMapaCompleto()" class="btn-mapa btn-mapa-secundario">
+                                📍 Ver mapa completo
+                            </button>
+                        </div>
+                        
+                        <!-- Información adicional de ubicación -->
+                        <div class="ubicacion-info">
+                            <p><strong>Dirección exacta:</strong> <span id="direccion-exacta">Sede Dos Caminos, Av. Rómulo Gallegos, Caracas 1071, Miranda, Venezuela</span></p>
+                            <p><strong>Horarios:</strong> Lunes a Viernes 7:00 AM - 5:00 PM</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 Blog de Investigación - Universidad Alejandro de Humboldt. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+    <script src="/js/main.js"></script>
+</body>
+</html>
