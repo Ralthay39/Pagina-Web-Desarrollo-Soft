@@ -34,19 +34,19 @@ http://localhost:3000
 El sistema incluye usuarios predefinidos:
 
 ## Administrador
-Correo: admin@unihumboldt.edu.ve
-Contraseña: admin123
-Permisos: Acceso total al sistema
+- Correo: admin@unihumboldt.edu.ve
+- Contraseña: admin123
+- Permisos: Acceso total al sistema
 
 ## Redactor
-Correo: profesor@unihumboldt.edu.ve
-Contraseña: profesor123
-Permisos: Crear y gestionar artículos propios
+- Correo: profesor@unihumboldt.edu.ve
+- Contraseña: profesor123
+- Permisos: Crear y gestionar artículos propios
 
 ## Usuario de Prueba
-Correo: prueba@unihumboldt.edu.ve
-Contraseña: prueba123
-Premisos: Ver y comentar artículos
+- Correo: prueba@unihumboldt.edu.ve
+- Contraseña: prueba123
+-Premisos: Ver y comentar artículos
 
 
 ### Códigos de Invitación
