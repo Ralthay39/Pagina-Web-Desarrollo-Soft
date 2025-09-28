@@ -1,4 +1,6 @@
-# Pagina-Web-Desarrollo-Soft
+# Pagina-Web - Desarrollo de Software
+- Daniel Gómez
+- C.I. 29.505.671
 
 # Blog Universitario - Sistema de Gestión de Contenidos
 
