@@ -1,4 +1,6 @@
-# Pagina-Web-Desarrollo-Soft
+## Pagina-Web - Desarrollo de Software
+- Daniel Gómez
+- C.I. 29.505.671
 
 # Blog Universitario - Sistema de Gestión de Contenidos
 
@@ -19,37 +21,36 @@ Pagina Web desarrollada bajo la premisa de gestión de artículos académicos de
 
 ## Instalación
 
-- 1. Clonar o descargar el proyecto
+- 1- Clonar o descargar el proyecto
 
-- 2. Instalar dependencias
+- 2- Instalar dependencias
 
 npm install express bcrypt express-session sqlite3
 
-## Ruta para abrir en el navegador
+### Ruta para abrir en el navegador
 
 http://localhost:3000
 
-
-### Usuarios de Prueba
+# Usuarios de Prueba
 El sistema incluye usuarios predefinidos:
 
 ## Administrador
-Correo: admin@unihumboldt.edu.ve
-Contraseña: admin123
-Permisos: Acceso total al sistema
+- Correo: admin@unihumboldt.edu.ve
+- Contraseña: admin123
+- Permisos: Acceso total al sistema
 
 ## Redactor
-Correo: profesor@unihumboldt.edu.ve
-Contraseña: profesor123
-Permisos: Crear y gestionar artículos propios
+- Correo: profesor@unihumboldt.edu.ve
+- Contraseña: profesor123
+- Permisos: Crear y gestionar artículos propios
 
 ## Usuario de Prueba
-Correo: prueba@unihumboldt.edu.ve
-Contraseña: prueba123
-Premisos: Ver y comentar artículos
+- Correo: prueba@unihumboldt.edu.ve
+- Contraseña: prueba123
+-Premisos: Ver y comentar artículos
 
 
-### Códigos de Invitación
+# Códigos de Invitación
 Al momento de registrarse se puede usar un código opcional para obtener roles específicos:
 
 - ADMIN-2025: Rol de Administrador
@@ -57,7 +58,7 @@ Al momento de registrarse se puede usar un código opcional para obtener roles e
 - Sin código: Rol de Usuario (lector)
 
 
-### Tecnologías Utilizadas
+# Tecnologías Utilizadas
 - Backend: Node.js + Express.js
 - Base de Datos: SQLite3
 - Frontend: HTML5, CSS3, JavaScript vanilla
