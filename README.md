@@ -1,4 +1,4 @@
-# Pagina-Web - Desarrollo de Software
+## Pagina-Web - Desarrollo de Software
 - Daniel Gómez
 - C.I. 29.505.671
 
@@ -21,18 +21,17 @@ Pagina Web desarrollada bajo la premisa de gestión de artículos académicos de
 
 ## Instalación
 
-- 1. Clonar o descargar el proyecto
+- 1- Clonar o descargar el proyecto
 
-- 2. Instalar dependencias
+- 2- Instalar dependencias
 
 npm install express bcrypt express-session sqlite3
 
-## Ruta para abrir en el navegador
+### Ruta para abrir en el navegador
 
 http://localhost:3000
 
-
-### Usuarios de Prueba
+# Usuarios de Prueba
 El sistema incluye usuarios predefinidos:
 
 ## Administrador
@@ -51,7 +50,7 @@ El sistema incluye usuarios predefinidos:
 -Premisos: Ver y comentar artículos
 
 
-### Códigos de Invitación
+# Códigos de Invitación
 Al momento de registrarse se puede usar un código opcional para obtener roles específicos:
 
 - ADMIN-2025: Rol de Administrador
@@ -59,7 +58,7 @@ Al momento de registrarse se puede usar un código opcional para obtener roles e
 - Sin código: Rol de Usuario (lector)
 
 
-### Tecnologías Utilizadas
+# Tecnologías Utilizadas
 - Backend: Node.js + Express.js
 - Base de Datos: SQLite3
 - Frontend: HTML5, CSS3, JavaScript vanilla
