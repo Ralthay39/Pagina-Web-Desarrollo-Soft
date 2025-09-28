@@ -164,8 +164,7 @@ class MapaManager {
         const lat = this.infoUniversidad.ubicacion.lat;
         const lng = this.infoUniversidad.ubicacion.lng;
         
-        // Cambiado a OpenStreetMap (gratuito)
-        const url = `https://www.openstreetmap.org/directions?from=&to=${lat},${lng}#map=15/${lat}/${lng}`;
+                const url = `https://www.openstreetmap.org/directions?from=&to=${lat},${lng}#map=15/${lat}/${lng}`;
         window.open(url, '_blank');
     }
 
@@ -175,7 +174,6 @@ class MapaManager {
         
         const texto = `Visita la ${this.infoUniversidad.nombre} - ${this.infoUniversidad.direccion}`;
         
-        // Cambiado a OpenStreetMap (gratuito)
         const url = `https://www.openstreetmap.org/#map=15/${this.infoUniversidad.ubicacion.lat}/${this.infoUniversidad.ubicacion.lng}`;
         
         if (navigator.share) {

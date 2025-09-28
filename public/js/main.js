@@ -24,7 +24,7 @@ class BlogManager {
             
             this.articulos = await response.json();
             console.log(`✅ ${this.articulos.length} artículos cargados`);
-            
+            console.log('📊 Primer artículo:', this.articulos[0]); // Para debug
         } catch (error) {
             console.error('❌ Error:', error);
             this.mostrarError('No se pudieron cargar los artículos');
@@ -55,12 +55,14 @@ class BlogManager {
 
     // Crear HTML para cada artículo
     crearCardArticulo(articulo) {
+        console.log('📄 Procesando artículo:', articulo); // Para debug
+        
         return `
             <article class="articulo-card" data-id="${articulo.id}">
                 <div class="articulo-imagen">
-                    ${articulo.imagen ? 
+                    ${articulo.imagen && articulo.imagen !== '/images/placeholder.jpg' ? 
                         `<img src="${articulo.imagen}" alt="${articulo.titulo}">` : 
-                        '📚'
+                        '<div class="placeholder-imagen">📚</div>'
                     }
                 </div>
                 <div class="articulo-contenido">
@@ -68,8 +70,8 @@ class BlogManager {
                     <h3 class="articulo-titulo">${articulo.titulo}</h3>
                     <p class="articulo-resumen">${articulo.resumen}</p>
                     <div class="articulo-meta">
-                        <span class="articulo-autor">👤 ${articulo.autor}</span>
-                        <span class="articulo-fecha">📅 ${this.formatearFecha(articulo.fecha)}</span>
+                        <span class="articulo-autor">👤 ${articulo.autor || articulo.autor_nombre}</span>
+                        <span class="articulo-fecha">📅 ${articulo.fecha_publicacion}</span>
                     </div>
                     <a href="/articulo/${articulo.id}" class="btn-leer-mas">
                         Leer más
@@ -79,19 +81,9 @@ class BlogManager {
         `;
     }
 
-    formatearFecha(fechaStr) {
-        const fecha = new Date(fechaStr);
-        return fecha.toLocaleDateString('es-ES', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
-    }
-
-    // Ver artículo individual (para implementar después)
+    // Ver artículo individual
     verArticulo(id) {
         console.log('Ver artículo:', id);
-        // Esto lo implementaremos en el Sprint 3
         alert(`Próximamente: Vista individual del artículo ${id}`);
     }
 
@@ -112,10 +104,4 @@ class BlogManager {
 // Inicializar cuando la página cargue
 document.addEventListener('DOMContentLoaded', () => {
     window.blogManager = new BlogManager();
-});
-
-// Inicializar ambos managers
-document.addEventListener('DOMContentLoaded', () => {
-    window.blogManager = new BlogManager();
-    // authManager se inicializa automáticamente en auth.js
 });

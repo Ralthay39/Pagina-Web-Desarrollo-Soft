@@ -1,19 +1,19 @@
 {
-  "name": "pagina-web",
+  "name": "pagina-universidad",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Blog universitario",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "node server.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "bcrypt": "^6.0.0",
-    "express": "^5.1.0",
-    "express-session": "^1.18.2",
-    "sqlite3": "^5.1.7"
-  }
+    "express": "^4.18.2",
+    "bcrypt": "^5.1.0",
+    "express-session": "^1.17.3",
+    "sqlite3": "^5.1.6"
+  },
+  "keywords": ["blog", "universidad", "nodejs", "sqlite"],
+  "author": "Daniel Gómez",
+  "license": "MIT"
 }

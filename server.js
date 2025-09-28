@@ -1,82 +1,30 @@
-// server.js - ESTRUCTURA BASE DEL BLOG
+// server.js - BLOG UNIVERSITARIO CON BASE DE DATOS SQLite
 const express = require('express');
 const path = require('path');
-const fs = require('fs');
 const session = require('express-session');
 const bcrypt = require('bcrypt');
+
+// Importar base de datos SQLite
+const database = require('./database');
 
 const app = express();
 const PORT = 3000;
 
-// Middlewares
+// ==================== CONFIGURACIÓN DE MIDDLEWARES ====================
 app.use(session({
     secret: 'blog-universitario-2025',
     resave: false,
     saveUninitialized: false,
     cookie: {
         secure: false,
-        maxAge: 24 * 60 * 60 * 1000, // 24 horas
+        maxAge: 24 * 60 * 60 * 1000,
         httpOnly: true
     }
 }));
+
 app.use(express.static('public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-
-// ==================== BASE DE DATOS SIMPLE ====================
-const cargarArticulos = () => {
-    try {
-        const data = fs.readFileSync('./data/articulos.json', 'utf8');
-        return JSON.parse(data);
-    } catch (error) {
-        return [];
-    }
-};
-
-const guardarArticulos = (articulos) => {
-    fs.writeFileSync('./data/articulos.json', JSON.stringify(articulos, null, 2));
-};
-
-const cargarUsuarios = () => {
-    try {
-        const data = fs.readFileSync('./data/usuarios.json', 'utf8');
-        return JSON.parse(data);
-    } catch (error) {
-        return [];
-    }
-};
-
-const guardarUsuarios = (usuarios) => {
-    fs.writeFileSync('./data/usuarios.json', JSON.stringify(usuarios, null, 2));
-};
-
-// ==================== BASE DE DATOS SQLITE ====================
-/*const database = require('./database');
-
-// Obtener artículos
-app.get('/api/articulos', async (req, res) => {
-    try {
-        const articulos = await database.obtenerArticulos();
-        res.json(articulos);
-    } catch (error) {
-        res.status(500).json({ error: 'Error obteniendo artículos' });
-    }
-});
-
-// Crear artículo
-app.post('/api/articulos', requireAuth, requireRole(['redactor', 'admin']), async (req, res) => {
-    try {
-        const nuevoArticulo = {
-            ...req.body,
-            autor_id: req.session.usuario.id
-        };
-        const articulo = await database.crearArticulo(nuevoArticulo);
-        res.status(201).json(articulo);
-    } catch (error) {
-        res.status(500).json({ error: 'Error creando artículo' });
-    }
-});*/
 
 // ==================== MIDDLEWARES DE AUTENTICACIÓN ====================
 const requireAuth = (req, res, next) => {
@@ -97,26 +45,63 @@ const requireRole = (roles) => {
     };
 };
 
-// ==================== RUTAS PÚBLICAS ====================
+// ==================== RUTAS PÚBLICAS (SIN AUTENTICACIÓN) ====================
+
+// Página principal
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// API para obtener artículos (público)
-app.get('/api/articulos', (req, res) => {
-    const articulos = cargarArticulos();
-    res.json(articulos);
+// Página de artículo individual
+app.get('/articulo/:id', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'articulo.html'));
 });
 
-app.get('/api/articulos/:id', (req, res) => {
-    const articulos = cargarArticulos();
-    const articulo = articulos.find(a => a.id === parseInt(req.params.id));
-    
-    if (!articulo) {
-        return res.status(404).json({ error: 'Artículo no encontrado' });
+// API para obtener artículos (público)
+app.get('/api/articulos', async (req, res) => {
+    try {
+        const articulos = await database.obtenerArticulos();
+        res.json(articulos);
+    } catch (error) {
+        console.error('❌ Error obteniendo artículos:', error);
+        res.status(500).json({ error: 'Error del servidor' });
     }
-    
-    res.json(articulo);
+});
+
+// API para obtener artículo individual
+app.get('/api/articulos/:id', async (req, res) => {
+    try {
+        const articulo = await database.obtenerArticuloPorId(parseInt(req.params.id));
+        
+        if (!articulo) {
+            return res.status(404).json({ error: 'Artículo no encontrado' });
+        }
+        
+        res.json(articulo);
+    } catch (error) {
+        console.error('❌ Error obteniendo artículo:', error);
+        res.status(500).json({ error: 'Error del servidor' });
+    }
+});
+
+// API para obtener artículo completo
+app.get('/api/articulo-completo/:id', async (req, res) => {
+    try {
+        const articulo = await database.obtenerArticuloPorId(parseInt(req.params.id));
+        
+        if (!articulo) {
+            return res.status(404).json({ error: 'Artículo no encontrado' });
+        }
+        
+        // Placeholder para comentarios (espacio para implementación)
+        res.json({
+            ...articulo,
+            comentarios: []
+        });
+    } catch (error) {
+        console.error('❌ Error obteniendo artículo completo:', error);
+        res.status(500).json({ error: 'Error del servidor' });
+    }
 });
 
 // ==================== RUTAS DE AUTENTICACIÓN ====================
@@ -136,28 +121,23 @@ app.post('/api/registro', async (req, res) => {
         }
 
         // Validar email institucional
-        const dominioPermitido = 'unihumboldt.edu.ve';
-        if (!email.endsWith('@' + dominioPermitido)) {
+        if (!email.endsWith('@unihumboldt.edu.ve')) {
             return res.status(400).json({ 
-                error: `Solo se permiten emails institucionales (@${dominioPermitido})` 
+                error: 'Solo se permiten emails institucionales (@unihumboldt.edu.ve)' 
             });
         }
 
-        const usuarios = cargarUsuarios();
-
         // Verificar si el usuario ya existe
-        const usuarioExistente = usuarios.find(u => u.email === email);
+        const usuarioExistente = await database.obtenerUsuarioPorEmail(email);
         if (usuarioExistente) {
             return res.status(400).json({ error: 'El usuario ya existe' });
         }
 
         // ASIGNACIÓN AUTOMÁTICA DE ROLES
-        let rolAsignado = 'viewer'; // Por defecto
-        
-        // Códigos de invitación para roles superiores (podrían estar en otro archivo)
+        let rolAsignado = 'viewer';
         const codigosInvitacion = {
             'ADMIN-2025': 'admin',
-            'REDACTOR-2025 ': 'redactor'
+            'REDACTOR-2025': 'redactor'
         };
 
         if (codigoInvitacion && codigosInvitacion[codigoInvitacion]) {
@@ -166,22 +146,16 @@ app.post('/api/registro', async (req, res) => {
         }
 
         // Encriptar contraseña
-        const saltRounds = 10;
-        const hashedPassword = await bcrypt.hash(password, saltRounds);
+        const hashedPassword = await bcrypt.hash(password, 10);
 
         // Crear nuevo usuario
-        const nuevoUsuario = {
-            id: usuarios.length > 0 ? Math.max(...usuarios.map(u => u.id)) + 1 : 1,
+        const nuevoUsuario = await database.crearUsuario({
             email,
             password: hashedPassword,
             nombre,
             rol: rolAsignado,
-            fechaRegistro: new Date().toISOString(),
-            codigoInvitacionUsado: codigoInvitacion || null
-        };
-
-        usuarios.push(nuevoUsuario);
-        guardarUsuarios(usuarios);
+            codigoInvitacion: codigoInvitacion || null
+        });
 
         // Iniciar sesión automáticamente
         req.session.usuario = {
@@ -195,12 +169,7 @@ app.post('/api/registro', async (req, res) => {
 
         res.status(201).json({ 
             mensaje: `Usuario registrado exitosamente como ${rolAsignado}`,
-            usuario: {
-                id: nuevoUsuario.id,
-                email: nuevoUsuario.email,
-                nombre: nuevoUsuario.nombre,
-                rol: nuevoUsuario.rol
-            }
+            usuario: req.session.usuario
         });
 
     } catch (error) {
@@ -218,9 +187,8 @@ app.post('/api/login', async (req, res) => {
             return res.status(400).json({ error: 'Email y contraseña son obligatorios' });
         }
 
-        const usuarios = cargarUsuarios();
-        const usuario = usuarios.find(u => u.email === email);
-
+        // Buscar usuario
+        const usuario = await database.obtenerUsuarioPorEmail(email);
         if (!usuario) {
             return res.status(400).json({ error: 'Credenciales incorrectas' });
         }
@@ -286,37 +254,10 @@ app.get('/api/admin', requireRole(['admin']), (req, res) => {
     res.json({ mensaje: 'Panel de administración' });
 });
 
-// ==================== RUTAS PARA VISTA INDIVIDUAL DE ARTÍCULOS ====================
-
-// Servir la página de artículo individual
-app.get('/articulo/:id', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'articulo.html'));
-});
-
-// API para obtener artículo individual con comentarios
-app.get('/api/articulo-completo/:id', (req, res) => {
-    const articulos = cargarArticulos();
-    const articulo = articulos.find(a => a.id === parseInt(req.params.id));
-    
-    if (!articulo) {
-        return res.status(404).json({ error: 'Artículo no encontrado' });
-    }
-    
-    // Por ahora devolvemos el artículo básico, en el Sprint 4 agregaremos comentarios
-    res.json({
-        ...articulo,
-        comentarios: [] // Placeholder para comentarios
-    });
-});
-
 // ==================== RUTAS PARA EL PANEL DE REDACCIÓN ====================
 
-// Servir la página del panel de redacción
-app.get('/panel', requireAuth, (req, res) => {
-    // Verificar que el usuario tenga rol de redactor o admin
-    if (!['redactor', 'admin'].includes(req.session.usuario.rol)) {
-        return res.status(403).send('No tienes permisos para acceder al panel');
-    }
+// Página del panel de redacción
+app.get('/panel', requireAuth, requireRole(['redactor', 'admin']), (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'panel.html'));
 });
 
@@ -330,24 +271,21 @@ app.post('/api/articulos', requireAuth, requireRole(['redactor', 'admin']), asyn
             return res.status(400).json({ error: 'Título, contenido y categoría son obligatorios' });
         }
 
-        const articulos = cargarArticulos();
-        const usuarios = cargarUsuarios();
-        const usuario = usuarios.find(u => u.id === req.session.usuario.id);
+        // Obtener información del autor
+        const usuario = await database.obtenerUsuarioPorId(req.session.usuario.id);
+        if (!usuario) {
+            return res.status(404).json({ error: 'Usuario no encontrado' });
+        }
 
         // Crear nuevo artículo
-        const nuevoArticulo = {
-            id: articulos.length > 0 ? Math.max(...articulos.map(a => a.id)) + 1 : 1,
+        const nuevoArticulo = await database.crearArticulo({
             titulo,
             contenido,
-            resumen: resumen || contenido.substring(0, 150) + '...', // Resumen automático si no se proporciona
-            autor: usuario.nombre,
+            resumen: resumen || contenido.substring(0, 150) + '...',
             categoria,
-            fecha: new Date().toISOString(),
-            imagen: '/images/placeholder.jpg' // Imagen por defecto
-        };
-
-        articulos.push(nuevoArticulo);
-        guardarArticulos(articulos);
+            autor_id: usuario.id,
+            autor_nombre: usuario.nombre
+        });
 
         console.log(`✅ Nuevo artículo creado: "${titulo}" por ${usuario.nombre}`);
 
@@ -357,7 +295,7 @@ app.post('/api/articulos', requireAuth, requireRole(['redactor', 'admin']), asyn
         });
 
     } catch (error) {
-        console.error('Error creando artículo:', error);
+        console.error('❌ Error creando artículo:', error);
         res.status(500).json({ error: 'Error interno del servidor' });
     }
 });
@@ -368,42 +306,35 @@ app.put('/api/articulos/:id', requireAuth, requireRole(['redactor', 'admin']), a
         const articuloId = parseInt(req.params.id);
         const { titulo, contenido, categoria, resumen } = req.body;
 
-        const articulos = cargarArticulos();
-        const articuloIndex = articulos.findIndex(a => a.id === articuloId);
-
-        if (articuloIndex === -1) {
+        // Verificar que el artículo existe
+        const articuloExistente = await database.obtenerArticuloPorId(articuloId);
+        if (!articuloExistente) {
             return res.status(404).json({ error: 'Artículo no encontrado' });
         }
 
-        // Verificar que el usuario es el autor o es admin
-        const usuarios = cargarUsuarios();
-        const usuario = usuarios.find(u => u.id === req.session.usuario.id);
-        
-        if (usuario.rol !== 'admin' && articulos[articuloIndex].autor !== usuario.nombre) {
+        // Verificar permisos de edición
+        const usuario = await database.obtenerUsuarioPorId(req.session.usuario.id);
+        if (usuario.rol !== 'admin' && articuloExistente.autor_id !== usuario.id) {
             return res.status(403).json({ error: 'Solo puedes editar tus propios artículos' });
         }
 
         // Actualizar artículo
-        articulos[articuloIndex] = {
-            ...articulos[articuloIndex],
-            titulo: titulo || articulos[articuloIndex].titulo,
-            contenido: contenido || articulos[articuloIndex].contenido,
-            categoria: categoria || articulos[articuloIndex].categoria,
-            resumen: resumen || articulos[articuloIndex].resumen,
-            fechaActualizacion: new Date().toISOString()
-        };
-
-        guardarArticulos(articulos);
+        const articuloActualizado = await database.actualizarArticulo(articuloId, {
+            titulo: titulo || articuloExistente.titulo,
+            contenido: contenido || articuloExistente.contenido,
+            categoria: categoria || articuloExistente.categoria,
+            resumen: resumen || articuloExistente.resumen
+        });
 
         console.log(`✏️ Artículo actualizado: ID ${articuloId} por ${usuario.nombre}`);
 
         res.json({
             mensaje: 'Artículo actualizado exitosamente',
-            articulo: articulos[articuloIndex]
+            articulo: articuloActualizado
         });
 
     } catch (error) {
-        console.error('Error actualizando artículo:', error);
+        console.error('❌ Error actualizando artículo:', error);
         res.status(500).json({ error: 'Error interno del servidor' });
     }
 });
@@ -413,33 +344,32 @@ app.delete('/api/articulos/:id', requireAuth, requireRole(['redactor', 'admin'])
     try {
         const articuloId = parseInt(req.params.id);
 
-        const articulos = cargarArticulos();
-        const articuloIndex = articulos.findIndex(a => a.id === articuloId);
-
-        if (articuloIndex === -1) {
+        // Verificar que el artículo existe
+        const articuloExistente = await database.obtenerArticuloPorId(articuloId);
+        if (!articuloExistente) {
             return res.status(404).json({ error: 'Artículo no encontrado' });
         }
 
-        // Verificar permisos
-        const usuarios = cargarUsuarios();
-        const usuario = usuarios.find(u => u.id === req.session.usuario.id);
-        
-        if (usuario.rol !== 'admin' && articulos[articuloIndex].autor !== usuario.nombre) {
+        // Verificar permisos de eliminación
+        const usuario = await database.obtenerUsuarioPorId(req.session.usuario.id);
+        if (usuario.rol !== 'admin' && articuloExistente.autor_id !== usuario.id) {
             return res.status(403).json({ error: 'Solo puedes eliminar tus propios artículos' });
         }
 
-        const articuloEliminado = articulos.splice(articuloIndex, 1)[0];
-        guardarArticulos(articulos);
+        // Eliminar artículo
+        await database.eliminarArticulo(articuloId);
 
-        console.log(`🗑️ Artículo eliminado: "${articuloEliminado.titulo}" por ${usuario.nombre}`);
+        console.log(`🗑️ Artículo eliminado: "${articuloExistente.titulo}" por ${usuario.nombre}`);
 
         res.json({ mensaje: 'Artículo eliminado exitosamente' });
 
     } catch (error) {
-        console.error('Error eliminando artículo:', error);
+        console.error('❌ Error eliminando artículo:', error);
         res.status(500).json({ error: 'Error interno del servidor' });
     }
 });
+
+// ==================== APIs ADICIONALES ====================
 
 // API de información universitaria
 app.get('/api/universidad', (req, res) => {
@@ -458,6 +388,9 @@ app.get('/api/universidad', (req, res) => {
     res.json(infoUniversidad);
 });
 
+// ==================== UTILIDADES DE DESARROLLO ====================
+
+// Middleware de logging para desarrollo
 app.use((req, res, next) => {
     console.log('📨 Petición:', req.method, req.url);
     console.log('🔐 Sesión:', req.session.usuario);
@@ -476,10 +409,10 @@ app.get('/api/debug-session', (req, res) => {
 // ==================== INICIAR SERVIDOR ====================
 app.listen(PORT, () => {
     console.log(`🚀 Blog de Seguridad en Redes ejecutándose en: http://localhost:${PORT}`);
-    console.log(`🔐 Sistema de autenticación activado`);
+    console.log(`🗄️  Base de datos SQLite activa`);
     console.log(`📊 Endpoints disponibles:`);
+    console.log(`   👉 GET  /api/articulos - Listar artículos`);
     console.log(`   👉 POST /api/registro - Registrar usuario`);
     console.log(`   👉 POST /api/login - Iniciar sesión`);
-    console.log(`   👉 POST /api/logout - Cerrar sesión`);
-    console.log(`   👉 GET  /api/usuario-actual - Usuario actual`);
+    console.log(`   👉 POST /api/articulos - Crear artículo (requiere permisos)`);
 });

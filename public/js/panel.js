@@ -3,7 +3,6 @@ class PanelManager {
     constructor() {
         this.articulos = [];
         this.authManager = null;
-        // No inicializar aquí - esperar a que auth esté listo
     }
 
     async init() {
@@ -86,6 +85,16 @@ class PanelManager {
         if (resumenInput) {
             resumenInput.addEventListener('input', () => this.actualizarContadorCaracteres());
         }
+
+        // Cerrar modal haciendo clic fuera
+        const modal = document.getElementById('modal-edicion');
+        if (modal) {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    this.cerrarModalEdicion();
+                }
+            });
+        }
     }
 
     // Navegación entre secciones
@@ -132,11 +141,12 @@ class PanelManager {
             if (response.ok) {
                 this.articulos = await response.json();
                 console.log(`✅ ${this.articulos.length} artículos cargados`);
+                console.log('📄 Primer artículo:', this.articulos[0]); // Debug
                 
                 // Filtrar artículos del usuario actual (a menos que sea admin)
                 if (this.authManager.usuario.rol !== 'admin') {
                     this.articulos = this.articulos.filter(articulo => 
-                        articulo.autor === this.authManager.usuario.nombre
+                        articulo.autor_id === this.authManager.usuario.id
                     );
                     console.log(`👤 ${this.articulos.length} artículos del usuario`);
                 }
@@ -152,6 +162,11 @@ class PanelManager {
     mostrarMisArticulos() {
         const contenedor = document.getElementById('lista-mis-articulos');
         
+        if (!contenedor) {
+            console.error('❌ No se encontró el contenedor de artículos');
+            return;
+        }
+
         if (!this.articulos || this.articulos.length === 0) {
             contenedor.innerHTML = `
                 <div class="no-articulos">
@@ -163,14 +178,14 @@ class PanelManager {
         }
 
         contenedor.innerHTML = this.articulos.map(articulo => `
-            <div class="articulo-panel">
+            <div class="articulo-panel" data-id="${articulo.id}">
                 <div class="articulo-panel-header">
                     <div class="articulo-panel-info">
                         <h3 class="articulo-panel-titulo">${articulo.titulo}</h3>
                         <div class="articulo-panel-meta">
-                            <span class="categoria-badge">${articulo.categoriaDisplay || articulo.categoria}</span>
-                            <span class="fecha">📅 ${this.formatearFecha(articulo.fecha)}</span>
-                            <span class="autor">👤 ${articulo.autor}</span>
+                            <span class="categoria-badge">${articulo.categoria}</span>
+                            <span class="fecha">📅 ${articulo.fecha_publicacion}</span>
+                            <span class="autor">👤 ${articulo.autor || articulo.autor_nombre}</span>
                         </div>
                         <p class="articulo-panel-resumen">${articulo.resumen}</p>
                     </div>
@@ -213,18 +228,15 @@ class PanelManager {
                     titulo,
                     contenido,
                     categoria,
-                    resumen: resumen || titulo.substring(0, 150) + '...', // Resumen automático si está vacío
-                    autor: this.authManager.usuario.nombre
+                    resumen: resumen || contenido.substring(0, 150) + '...'
                 })
             });
 
             const data = await response.json();
 
             if (response.ok) {
-                this.mostrarMensaje('✅ Artículo creado exitosamente', 'exito');
-                // Limpiar formulario
+                this.mostrarMensaje('✅ Artículo creado exitosamente', 'success');
                 this.limpiarFormularioNuevo();
-                // Recargar artículos
                 await this.cargarArticulos();
                 this.mostrarSeccion('mis-articulos');
             } else {
@@ -246,14 +258,19 @@ class PanelManager {
     abrirModalEdicion(articuloId) {
         console.log('✏️ Abriendo edición para artículo:', articuloId);
         const articulo = this.articulos.find(a => a.id === articuloId);
-        if (!articulo) return;
+        if (!articulo) {
+            this.mostrarMensaje('❌ Artículo no encontrado', 'error');
+            return;
+        }
 
+        // Llenar formulario de edición
         document.getElementById('editar-id').value = articulo.id;
         document.getElementById('editar-titulo').value = articulo.titulo;
         document.getElementById('editar-categoria').value = articulo.categoria;
         document.getElementById('editar-resumen').value = articulo.resumen || '';
         document.getElementById('editar-contenido').value = articulo.contenido;
 
+        // Mostrar modal
         document.getElementById('modal-edicion').style.display = 'block';
     }
 
@@ -273,6 +290,11 @@ class PanelManager {
         const categoria = document.getElementById('editar-categoria').value;
         const resumen = document.getElementById('editar-resumen').value.trim();
 
+        if (!titulo || !contenido || !categoria) {
+            this.mostrarMensaje('❌ Todos los campos obligatorios deben ser completados', 'error');
+            return;
+        }
+
         try {
             const response = await fetch(`/api/articulos/${articuloId}`, {
                 method: 'PUT',
@@ -283,14 +305,14 @@ class PanelManager {
                     titulo,
                     contenido,
                     categoria,
-                    resumen: resumen || null
+                    resumen: resumen || contenido.substring(0, 150) + '...'
                 })
             });
 
             const data = await response.json();
 
             if (response.ok) {
-                this.mostrarMensaje('✅ Artículo actualizado exitosamente', 'exito');
+                this.mostrarMensaje('✅ Artículo actualizado exitosamente', 'success');
                 this.cerrarModalEdicion();
                 await this.cargarArticulos();
                 this.mostrarMisArticulos();
@@ -305,7 +327,7 @@ class PanelManager {
 
     // Eliminar artículo
     async eliminarArticulo(articuloId) {
-        if (!confirm('¿Estás seguro de que quieres eliminar este artículo? Esta acción no se puede deshacer.')) {
+        if (!confirm('¿Estás seguro de que quieres eliminar este artículo? \n\nEsta acción no se puede deshacer.')) {
             return;
         }
 
@@ -314,13 +336,12 @@ class PanelManager {
                 method: 'DELETE'
             });
 
-            const data = await response.json();
-
             if (response.ok) {
-                this.mostrarMensaje('✅ Artículo eliminado exitosamente', 'exito');
+                this.mostrarMensaje('✅ Artículo eliminado exitosamente', 'success');
                 await this.cargarArticulos();
                 this.mostrarMisArticulos();
             } else {
+                const data = await response.json();
                 this.mostrarMensaje(`❌ ${data.error}`, 'error');
             }
         } catch (error) {
@@ -332,9 +353,12 @@ class PanelManager {
     // Mostrar estadísticas
     mostrarEstadisticas() {
         const contenedor = document.getElementById('contenido-estadisticas');
+        if (!contenedor) return;
         
         const totalArticulos = this.articulos.length;
-        const misArticulos = this.articulos.filter(a => a.autor === this.authManager.usuario.nombre).length;
+        const misArticulos = this.articulos.filter(a => 
+            a.autor_id === this.authManager.usuario.id
+        ).length;
         const categorias = [...new Set(this.articulos.map(a => a.categoria))].length;
 
         contenedor.innerHTML = `
@@ -356,11 +380,6 @@ class PanelManager {
     }
 
     // Utilidades
-    formatearFecha(fechaStr) {
-        const fecha = new Date(fechaStr);
-        return fecha.toLocaleDateString('es-ES');
-    }
-
     actualizarContadorCaracteres() {
         const resumen = document.getElementById('resumen');
         const contador = document.getElementById('contador-resumen');
@@ -371,10 +390,13 @@ class PanelManager {
     }
 
     mostrarMensaje(mensaje, tipo) {
-        // Eliminar mensajes anteriores
-        const mensajesAnteriores = document.querySelectorAll('.mensaje-flotante');
-        mensajesAnteriores.forEach(msg => msg.remove());
+        // Reutilizar la función del authManager si existe
+        if (this.authManager && this.authManager.mostrarMensaje) {
+            this.authManager.mostrarMensaje(mensaje, tipo);
+            return;
+        }
 
+        // Fallback: crear mensaje básico
         const mensajeDiv = document.createElement('div');
         mensajeDiv.className = `mensaje-flotante ${tipo}`;
         mensajeDiv.textContent = mensaje;
@@ -387,10 +409,9 @@ class PanelManager {
             color: white;
             z-index: 10000;
             font-weight: bold;
-            animation: slideInRight 0.3s ease-out;
         `;
 
-        if (tipo === 'exito') {
+        if (tipo === 'success') {
             mensajeDiv.style.background = '#27ae60';
         } else {
             mensajeDiv.style.background = '#e74c3c';
@@ -398,32 +419,33 @@ class PanelManager {
 
         document.body.appendChild(mensajeDiv);
 
-        // Auto-eliminar después de 5 segundos
         setTimeout(() => {
-            mensajeDiv.remove();
+            if (mensajeDiv.parentNode) {
+                mensajeDiv.parentNode.removeChild(mensajeDiv);
+            }
         }, 5000);
     }
 
     mostrarError(mensaje) {
-        const main = document.querySelector('.main .container');
-        main.innerHTML = `
-            <div class="mensaje-error" style="text-align: center; padding: 2rem;">
-                <h2>❌ Error</h2>
-                <p>${mensaje}</p>
-                <a href="/" style="color: #3498db;">Volver al inicio</a>
-            </div>
-        `;
+        const main = document.querySelector('main');
+        if (main) {
+            main.innerHTML = `
+                <div class="mensaje-error" style="text-align: center; padding: 2rem;">
+                    <h2>❌ Error</h2>
+                    <p>${mensaje}</p>
+                    <a href="/" style="color: #3498db;">Volver al inicio</a>
+                </div>
+            `;
+        }
     }
 }
 
-// Inicialización - Esperar a que todo esté listo
+// Inicialización
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('🚀 Inicializando panel...');
     
-    // Crear instancia pero no inicializar aún
     window.panelManager = new PanelManager();
     
-    // Esperar un momento para que auth.js se inicialice
     setTimeout(async () => {
         try {
             await window.panelManager.init();

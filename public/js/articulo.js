@@ -1,4 +1,4 @@
-// articulo.js - Manejo de la vista individual de artículos CON AUTENTICACIÓN
+// Manejo de la vista individual de artículos
 class ArticuloManager {
     constructor() {
         this.articuloActual = null;
@@ -47,6 +47,7 @@ class ArticuloManager {
             }
 
             this.articuloActual = await response.json();
+            console.log('📄 Artículo cargado:', this.articuloActual); // Debug
             this.mostrarArticulo();
             
         } catch (error) {
@@ -60,13 +61,14 @@ class ArticuloManager {
         try {
             const response = await fetch('/api/articulos');
             this.todosArticulos = await response.json();
-            this.todosArticulos.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+            // Ordenar por fecha de publicación (ya viene formateada del servidor)
+            this.todosArticulos.sort((a, b) => b.id - a.id); // Ordenar por ID (más reciente primero)
         } catch (error) {
             console.error('Error cargando artículos:', error);
         }
     }
 
-    // Cargar comentarios (placeholder para Sprint 4)
+    // Cargar comentarios
     async cargarComentarios() {
         // Por ahora cargamos comentarios vacíos
         this.comentarios = [];
@@ -84,8 +86,8 @@ class ArticuloManager {
                 <span class="articulo-categoria">${this.articuloActual.categoria}</span>
                 <h1 class="articulo-titulo">${this.articuloActual.titulo}</h1>
                 <div class="articulo-meta">
-                    <span class="articulo-autor"> ${this.articuloActual.autor}</span>
-                    <span class="articulo-fecha"> ${this.formatearFecha(this.articuloActual.fecha)}</span>
+                    <span class="articulo-autor">${this.articuloActual.autor || this.articuloActual.autor_nombre}</span>
+                    <span class="articulo-fecha">${this.articuloActual.fecha_publicacion}</span>
                 </div>
             </div>
             
@@ -95,8 +97,11 @@ class ArticuloManager {
         `;
 
         // Actualizar breadcrumb
-        document.getElementById('breadcrumb-categoria').textContent = this.articuloActual.categoria;
-        document.getElementById('breadcrumb-titulo').textContent = this.articuloActual.titulo;
+        const breadcrumbCategoria = document.getElementById('breadcrumb-categoria');
+        const breadcrumbTitulo = document.getElementById('breadcrumb-titulo');
+        
+        if (breadcrumbCategoria) breadcrumbCategoria.textContent = this.articuloActual.categoria;
+        if (breadcrumbTitulo) breadcrumbTitulo.textContent = this.articuloActual.titulo;
 
         // Actualizar título de la página
         document.title = `${this.articuloActual.titulo} - Blog Universitario`;
@@ -109,33 +114,28 @@ class ArticuloManager {
         ).join('');
     }
 
-    formatearFecha(fechaStr) {
-        const fecha = new Date(fechaStr);
-        return fecha.toLocaleDateString('es-ES', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
-    }
-
     // Configurar navegación entre artículos
     configurarNavegacion() {
         const btnAnterior = document.getElementById('btn-anterior');
         const btnSiguiente = document.getElementById('btn-siguiente');
 
-        if (this.todosArticulos.length > 0 && this.articuloActual) {
+        if (btnAnterior && btnSiguiente && this.todosArticulos.length > 0 && this.articuloActual) {
             const currentIndex = this.todosArticulos.findIndex(a => a.id === this.articuloActual.id);
             
             // Artículo anterior
             if (currentIndex > 0) {
                 btnAnterior.disabled = false;
                 btnAnterior.onclick = () => this.navegarAArticulo(this.todosArticulos[currentIndex - 1].id);
+            } else {
+                btnAnterior.disabled = true;
             }
 
             // Artículo siguiente
             if (currentIndex < this.todosArticulos.length - 1) {
                 btnSiguiente.disabled = false;
                 btnSiguiente.onclick = () => this.navegarAArticulo(this.todosArticulos[currentIndex + 1].id);
+            } else {
+                btnSiguiente.disabled = true;
             }
         }
     }
@@ -163,14 +163,16 @@ class ArticuloManager {
         const noAutenticado = document.getElementById('no-autenticado');
         const autenticado = document.getElementById('autenticado');
         
-        if (this.authManager && this.authManager.usuario) {
-            // Usuario autenticado
-            noAutenticado.style.display = 'none';
-            autenticado.style.display = 'block';
-        } else {
-            // Usuario no autenticado
-            noAutenticado.style.display = 'block';
-            autenticado.style.display = 'none';
+        if (noAutenticado && autenticado) {
+            if (this.authManager && this.authManager.usuario) {
+                // Usuario autenticado
+                noAutenticado.style.display = 'none';
+                autenticado.style.display = 'block';
+            } else {
+                // Usuario no autenticado
+                noAutenticado.style.display = 'block';
+                autenticado.style.display = 'none';
+            }
         }
     }
 
@@ -212,13 +214,15 @@ class ArticuloManager {
 
     mostrarError(mensaje) {
         const contenido = document.getElementById('contenido-articulo');
-        contenido.innerHTML = `
-            <div class="error">
-                <h2>❌ Error</h2>
-                <p>${mensaje}</p>
-                <a href="/">Volver al inicio</a>
-            </div>
-        `;
+        if (contenido) {
+            contenido.innerHTML = `
+                <div class="error">
+                    <h2>❌ Error</h2>
+                    <p>${mensaje}</p>
+                    <a href="/">Volver al inicio</a>
+                </div>
+            `;
+        }
     }
 
     mostrarMensaje(mensaje, tipo) {
@@ -234,15 +238,16 @@ class ArticuloManager {
 
 // Inicializar cuando la página cargue
 document.addEventListener('DOMContentLoaded', () => {
-    // Inicializar auth manager primero
+    // Inicializar auth manager primero si no existe
     if (!window.authManager) {
-        window.authManager = new AuthManager();
+        // Asegurarse de que AuthManager esté disponible
+        if (typeof AuthManager !== 'undefined') {
+            window.authManager = new AuthManager();
+        } else {
+            console.warn('⚠️ AuthManager no está disponible');
+        }
     }
     
     // Luego inicializar el manager de artículo
     window.articuloManager = new ArticuloManager();
-});
-// Inicializar cuando la página cargue
-document.addEventListener('DOMContentLoaded', () => {
-    new ArticuloManager();
 });
